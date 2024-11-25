@@ -30,18 +30,22 @@
       <v-btn color="success" @click="setLocalStorage()"> Set </v-btn>
       <v-btn color="success" @click="removeLocalStorage()"> Remove </v-btn>
     </v-col>
+    <testprops :name="name" />
     <!-- <cardimg /> -->
   </div>
 </template>
 
 <script>
 // import cardimg from "../components/CardImg.vue";
+import testprops from "../components/TestProps.vue";
 export default {
   components: {
+    testprops,
     // cardimg,
   },
   data() {
     return {
+      name: "Iffahan",
       msg: " Show on true",
       show: false,
       item: [
