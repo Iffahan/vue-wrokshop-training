@@ -4,8 +4,6 @@
     <div v-if="show">{{ msg }}</div>
     <v-btn color="success" @click="callAlert()"> Alert </v-btn>
     <v-btn color="success" @click="callAlertParam(msg)"> Alert 2</v-btn>
-    <v-btn color="success" @click="setLocalStorage()"> Set </v-btn>
-    <v-btn color="success" @click="removeLocalStorage()"> Remove </v-btn>
     <v-btn color="success" @click="show = !show"> Swicth </v-btn>
     <v-row>
       <v-cow cols="6" v-for="(item, index) in item" :key="index">
@@ -29,6 +27,8 @@
         name="name"
       >
       </v-text-field>
+      <v-btn color="success" @click="setLocalStorage()"> Set </v-btn>
+      <v-btn color="success" @click="removeLocalStorage()"> Remove </v-btn>
     </v-col>
     <!-- <cardimg /> -->
   </div>
@@ -63,9 +63,11 @@ export default {
     },
     setLocalStorage() {
       localStorage.setItem("name", this.value1);
+      this.$cookies.set("name", this.value1, "60s");
     },
     removeLocalStorage() {
       localStorage.removeItem("name");
+      this.$cookies.remove("name");
     },
   },
 };
