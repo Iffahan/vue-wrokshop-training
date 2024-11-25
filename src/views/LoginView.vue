@@ -6,7 +6,7 @@
     <v-btn color="success" @click="callAlertParam(msg)"> Alert 2</v-btn>
     <v-btn color="success" @click="show = !show"> Swicth </v-btn>
     <v-row>
-      <v-cow cols="6" v-for="(item, index) in item" :key="index">
+      <v-col cols="3" v-for="(item, index) in item" :key="index">
         <div>
           <v-card
             width="300"
@@ -16,16 +16,11 @@
             <v-card-title primary-title> {{ item.message }} </v-card-title>
           </v-card>
         </div>
-      </v-cow>
+      </v-col>
     </v-row>
     <v-col cols="12">
       <h1>{{ value1 }}</h1>
-      <v-text-field
-        v-model="value1"
-        label="Text"
-        placeholder="Enter a name"
-        name="name"
-      >
+      <v-text-field v-model="value1" label="Text" placeholder="Enter a name">
       </v-text-field>
       <v-btn color="success" @click="setLocalStorage()"> Set </v-btn>
       <v-btn color="success" @click="removeLocalStorage()"> Remove </v-btn>
@@ -76,9 +71,14 @@ export default {
     },
   },
   mounted() {
-    EventBus.$on("CallAlertMain", this.callAlert);
+    // Add listener only once
+    if (!this.eventListenerAdded) {
+      EventBus.$on("CallAlertMain", this.callAlert);
+      this.eventListenerAdded = true;
+    }
   },
   beforeDestroy() {
+    // Remove listener when the component is destroyed
     EventBus.$off("CallAlertMain", this.callAlert);
   },
 };
