@@ -38,6 +38,7 @@
 <script>
 // import cardimg from "../components/CardImg.vue";
 import testprops from "../components/TestProps.vue";
+import { EventBus } from "@/EventBus";
 export default {
   components: {
     testprops,
@@ -73,6 +74,12 @@ export default {
       localStorage.removeItem("name");
       this.$cookies.remove("name");
     },
+  },
+  mounted() {
+    EventBus.$on("CallAlertMain", this.callAlert);
+  },
+  beforeDestroy() {
+    EventBus.$off("CallAlertMain", this.callAlert);
   },
 };
 </script>
