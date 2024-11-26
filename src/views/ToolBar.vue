@@ -32,6 +32,7 @@
 
       <!-- Navigation Buttons (for larger screens) -->
       <v-btn v-show="!isMobile" text to="/"> Home </v-btn>
+      <v-btn v-show="!isMobile" text to="/grade"> Grade </v-btn>
       <v-btn v-show="!isMobile" text to="/about"> About </v-btn>
       <v-btn v-show="!isMobile" text to="/login"> Login </v-btn>
 
@@ -44,20 +45,11 @@
         </template>
         <v-list>
           <v-list-item to="/">Home</v-list-item>
+          <v-list-item to="/grade">Grade</v-list-item>
           <v-list-item to="/about">About</v-list-item>
           <v-list-item to="/login">Login</v-list-item>
         </v-list>
       </v-menu>
-
-      <!-- More Button (unchanged) -->
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">More</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
     </v-app-bar>
 
     <v-main>
