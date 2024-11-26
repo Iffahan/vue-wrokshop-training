@@ -102,7 +102,7 @@ export default {
 
 <style scoped>
 .grade-calculator {
-  background: linear-gradient(to bottom, #f3f4f6, #e0e0e0);
+  background: linear-gradient(to bottom, #f3f4f6, green);
   min-height: 100vh;
   display: flex;
   align-items: center;

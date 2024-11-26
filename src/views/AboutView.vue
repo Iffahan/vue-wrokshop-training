@@ -65,19 +65,15 @@
                 <h3>📱 Connect with me:</h3>
                 <v-btn
                   icon
-                  href="https://linkedin.com/in/yourprofile"
+                  href="https://www.linkedin.com/in/iffahan-suksuwan-b0a055318/"
                   target="_blank"
                 >
                   <v-icon color="blue darken-3">mdi-linkedin</v-icon>
                 </v-btn>
-                <v-btn icon href="mailto:yourmail@example.com">
+                <v-btn icon href="iffahan.suksuwan@gmail.com">
                   <v-icon color="red">mdi-email</v-icon>
                 </v-btn>
-                <v-btn
-                  icon
-                  href="https://github.com/yourusername"
-                  target="_blank"
-                >
+                <v-btn icon href="https://github.com/Iffahan" target="_blank">
                   <v-icon color="black">mdi-github</v-icon>
                 </v-btn>
               </v-row>
@@ -103,6 +99,7 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  background: linear-gradient(to bottom, #f3f4f6, green);
 }
 
 /* Main Content Card */

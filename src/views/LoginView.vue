@@ -1,10 +1,5 @@
 <template>
-  <v-container
-    fluid
-    class="auth-container"
-    style="color: white; height: 100vh; background-color: green"
-    fill-height
-  >
+  <v-container fluid class="auth-container" fill-height>
     <v-row justify="center" align="center" class="fill-height">
       <!-- Left Section: Logo and Text -->
       <v-col
@@ -162,40 +157,63 @@ export default {
     };
   },
   methods: {
-    // Toggle between Login and Register
     toggleForm() {
       this.isLogin = !this.isLogin;
     },
 
-    handleSubmit() {
+    async handleSubmit() {
       if (this.isLogin) {
-        this.handleLogin();
+        await this.handleLogin();
       } else {
-        this.handleRegister();
+        await this.handleRegister();
       }
     },
 
-    handleLogin() {
-      this.loading = true;
-      // Simulate login logic
-      setTimeout(() => {
+    async handleLogin() {
+      try {
+        this.loading = true;
+        const response = await this.axios.post("/authen/login", {
+          username: this.username,
+          password: this.password,
+        });
         this.loading = false;
-        this.$router.push("/"); // Redirect to home/dashboard after login
-      }, 2000);
+        // Assuming token or user data is returned
+        console.log(response.data);
+        this.$router.push("/"); // Redirect after login
+      } catch (error) {
+        this.loading = false;
+        console.error(error);
+        alert("Login failed. Please check your credentials.");
+      }
     },
 
-    handleRegister() {
+    async handleRegister() {
       if (this.password !== this.confirmPassword) {
         alert("Passwords do not match");
         return;
       }
 
-      this.loading = true;
-      // Simulate registration logic
-      setTimeout(() => {
+      try {
+        this.loading = true;
+        console.log(
+          "Registering user:",
+          this.username,
+          this.email,
+          this.password
+        );
+        const response = await this.axios.post("/users", {
+          username: this.username,
+          email: this.email,
+          password: this.password,
+        });
         this.loading = false;
-        this.$router.push("/"); // Redirect to login page after successful registration
-      }, 2000);
+        console.log(response.data);
+        this.$router.push("/"); // Redirect after registration
+      } catch (error) {
+        this.loading = false;
+        console.error(error);
+        alert("Registration failed. Please try again.");
+      }
     },
   },
 };
@@ -203,7 +221,9 @@ export default {
 
 <style scoped>
 .auth-container {
-  background-color: green;
+  background: linear-gradient(to bottom, #f3f4f6, green);
+  height: 100vh;
+  color: white;
 }
 
 .v-card {
