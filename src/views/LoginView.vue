@@ -1,146 +1,165 @@
 <template>
-  <v-container fluid class="auth-container" fill-height>
-    <v-row justify="center" align="center" class="fill-height">
-      <!-- Left Section: Logo and Text -->
-      <v-col
-        cols="12"
-        sm="12"
-        md="6"
-        class="d-flex flex-column justify-center align-center"
-      >
-        <v-img
-          src="../assets/shop.svg"
-          alt="Shop Logo"
-          max-width="200"
-          contain
-        />
-        <h2 class="mt-4">Welcome to Shoptify</h2>
-        <p>Your one-stop shop for everything!</p>
-      </v-col>
+  <v-app>
+    <!-- or <div> if you prefer a plain container -->
+    <v-container fluid class="auth-container" fill-height>
+      <v-row justify="center" align="center" class="fill-height">
+        <!-- Left Section: Logo and Text -->
+        <v-col
+          cols="12"
+          sm="12"
+          md="6"
+          class="d-flex flex-column justify-center align-center"
+        >
+          <v-img
+            src="../assets/shop.svg"
+            alt="Shop Logo"
+            max-width="200"
+            contain
+          />
+          <h2 class="mt-4">Welcome to Shoptify</h2>
+          <p>Your one-stop shop for everything!</p>
+        </v-col>
 
-      <!-- Right Section: Login/Signup Form -->
-      <v-col cols="12" sm="8" md="6" lg="4">
-        <v-card class="pa-4" elevation="2">
-          <v-card-title class="green white--text justify-center mb-4">
-            <h3>{{ isLogin ? "Login" : "Sign up" }}</h3>
-          </v-card-title>
+        <!-- Right Section: Login/Signup Form -->
+        <v-col cols="12" sm="8" md="6" lg="4">
+          <v-card class="pa-4" elevation="2">
+            <v-card-title class="green white--text justify-center mb-4">
+              <h3>{{ isLogin ? "Login" : "Sign up" }}</h3>
+            </v-card-title>
 
-          <!-- Add transition effect for left-right swap -->
-          <v-form ref="authForm" v-model="valid" @submit.prevent="handleSubmit">
-            <transition name="slide-fade" mode="out-in">
-              <div :key="isLogin ? 'login' : 'register'">
-                <!-- Login Form -->
-                <div v-if="isLogin">
-                  <v-text-field
-                    v-model="username"
-                    label="Username"
-                    outlined
-                    dense
-                    color="green"
-                    class="mb-2"
-                    required
-                  />
-                  <v-text-field
-                    v-model="password"
-                    label="Password"
-                    outlined
-                    dense
-                    color="green"
-                    type="password"
-                    class="mb-2"
-                    required
-                  />
-                  <v-btn
-                    type="submit"
-                    block
-                    color="green"
-                    :loading="loading"
-                    :disabled="!valid"
-                  >
-                    Login
-                  </v-btn>
+            <!-- Add transition effect for left-right swap -->
+            <v-form
+              ref="authForm"
+              v-model="valid"
+              @submit.prevent="handleSubmit"
+            >
+              <transition name="slide-fade" mode="out-in">
+                <div :key="isLogin ? 'login' : 'register'">
+                  <!-- Login Form -->
+                  <div v-if="isLogin">
+                    <v-text-field
+                      v-model="username"
+                      label="Username"
+                      outlined
+                      dense
+                      color="green"
+                      class="mb-2"
+                      required
+                    />
+                    <v-text-field
+                      v-model="password"
+                      label="Password"
+                      outlined
+                      dense
+                      color="green"
+                      type="password"
+                      class="mb-2"
+                      required
+                    />
+                    <v-btn
+                      type="submit"
+                      block
+                      color="green"
+                      :loading="loading"
+                      :disabled="!valid"
+                    >
+                      Login
+                    </v-btn>
+                  </div>
+
+                  <!-- Register Form -->
+                  <div v-if="!isLogin">
+                    <v-text-field
+                      v-model="username"
+                      label="Username"
+                      outlined
+                      dense
+                      color="green"
+                      class="mb-2"
+                      required
+                    />
+                    <v-text-field
+                      v-model="email"
+                      label="Email"
+                      outlined
+                      dense
+                      color="green"
+                      class="mb-2"
+                      required
+                    />
+                    <v-text-field
+                      v-model="password"
+                      label="Password"
+                      outlined
+                      dense
+                      color="green"
+                      type="password"
+                      class="mb-2"
+                      required
+                    />
+                    <v-text-field
+                      v-model="confirmPassword"
+                      label="Confirm Password"
+                      outlined
+                      dense
+                      color="green"
+                      type="password"
+                      class="mb-2"
+                      required
+                    />
+                    <v-btn
+                      type="submit"
+                      block
+                      color="green"
+                      :loading="loading"
+                      :disabled="!valid"
+                    >
+                      Register
+                    </v-btn>
+                  </div>
                 </div>
+              </transition>
+            </v-form>
 
-                <!-- Register Form -->
-                <div v-if="!isLogin">
-                  <v-text-field
-                    v-model="username"
-                    label="Username"
-                    outlined
-                    dense
-                    color="green"
-                    class="mb-2"
-                    required
-                  />
-                  <v-text-field
-                    v-model="email"
-                    label="Email"
-                    outlined
-                    dense
-                    color="green"
-                    class="mb-2"
-                    required
-                  />
-                  <v-text-field
-                    v-model="password"
-                    label="Password"
-                    outlined
-                    dense
-                    color="green"
-                    type="password"
-                    class="mb-2"
-                    required
-                  />
-                  <v-text-field
-                    v-model="confirmPassword"
-                    label="Confirm Password"
-                    outlined
-                    dense
-                    color="green"
-                    type="password"
-                    class="mb-2"
-                    required
-                  />
-                  <v-btn
-                    type="submit"
-                    block
-                    color="green"
-                    :loading="loading"
-                    :disabled="!valid"
+            <!-- Switch Button for Register/Login -->
+            <v-row justify="center" align="center" class="mt-4">
+              <span>
+                <span v-if="isLogin">
+                  New to Shoptify?
+                  <span
+                    @click.stop="toggleForm"
+                    style="color: green; cursor: pointer"
                   >
-                    Register
-                  </v-btn>
-                </div>
-              </div>
-            </transition>
-          </v-form>
+                    <strong>Sign up</strong></span
+                  >
+                </span>
+                <span v-else>
+                  Already have an account?
+                  <span
+                    @click.stop="toggleForm"
+                    style="color: green; cursor: pointer"
+                    ><strong>Login</strong></span
+                  >
+                </span>
+              </span>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
-          <!-- Switch Button for Register/Login -->
-          <v-row justify="center" align="center" class="mt-4">
-            <span>
-              <span v-if="isLogin">
-                New to Shoptify?
-                <span
-                  @click.stop="toggleForm"
-                  style="color: green; cursor: pointer"
-                >
-                  <strong>Sign up</strong></span
-                >
-              </span>
-              <span v-else>
-                Already have an account?
-                <span
-                  @click.stop="toggleForm"
-                  style="color: green; cursor: pointer"
-                  ><strong>Login</strong></span
-                >
-              </span>
-            </span>
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+    <!-- Success Modal -->
+    <v-dialog v-model="successDialog" max-width="400px">
+      <v-card>
+        <v-card-title class="text-h6">Success!</v-card-title>
+        <v-card-text>{{ successMessage }}</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="green" @click="handleSuccessDialog">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-app>
 </template>
 
 <script>
@@ -154,6 +173,8 @@ export default {
       confirmPassword: "",
       valid: false,
       loading: false,
+      successDialog: false,
+      successMessage: "",
     };
   },
   methods: {
@@ -172,14 +193,22 @@ export default {
     async handleLogin() {
       try {
         this.loading = true;
-        const response = await this.axios.post("/authen/login", {
-          username: this.username,
-          password: this.password,
-        });
-        this.loading = false;
-        // Assuming token or user data is returned
-        console.log(response.data);
-        this.$router.push("/"); // Redirect after login
+        // Wait for 1 second before sending the login request
+        setTimeout(async () => {
+          const response = await this.axios.post("/authen/login", {
+            username: this.username,
+            password: this.password,
+          });
+          this.loading = false;
+          console.log(response.data);
+          setTimeout(() => {
+            this.successMessage = "Login successful!";
+            this.successDialog = true;
+            setTimeout(() => {
+              this.$router.push("/"); // Redirect after login
+            }, 1000); // Add a 1-second delay before redirecting
+          }, 1000); // Delay before showing success message
+        }, 1000); // Delay before calling API
       } catch (error) {
         this.loading = false;
         console.error(error);
@@ -195,24 +224,35 @@ export default {
 
       try {
         this.loading = true;
-        console.log(
-          "Registering user:",
-          this.username,
-          this.email,
-          this.password
-        );
-        const response = await this.axios.post("/users", {
-          username: this.username,
-          email: this.email,
-          password: this.password,
-        });
-        this.loading = false;
-        console.log(response.data);
-        this.$router.push("/"); // Redirect after registration
+        // Wait for 1 second before sending the registration request
+        setTimeout(async () => {
+          const response = await this.axios.post("/users", {
+            username: this.username,
+            email: this.email,
+            password: this.password,
+          });
+          this.loading = false;
+          console.log(response.data);
+          if (response.data.success) {
+            this.successMessage =
+              "Registration successful! You can now log in.";
+            this.successDialog = true;
+            setTimeout(() => {
+              this.isLogin = true; // Switch to login form after 1 second
+            }, 1000);
+          }
+        }, 1000); // Delay before calling API
       } catch (error) {
         this.loading = false;
         console.error(error);
         alert("Registration failed. Please try again.");
+      }
+    },
+
+    handleSuccessDialog() {
+      this.successDialog = false;
+      if (this.isLogin) {
+        console.log(`isLogin: ${this.isLogin}`);
       }
     },
   },
