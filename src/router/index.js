@@ -33,6 +33,11 @@ const routes = [
         name: 'grade',
         component: () => import('../views/GradeCal.vue')
       },
+      {
+        path: '/test',
+        name: 'test',
+        component: () => import('../views/TestViews.vue')
+      },
     ]
   }
 ]
