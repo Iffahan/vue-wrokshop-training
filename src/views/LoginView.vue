@@ -177,13 +177,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      "login",
-      "logout",
-      "setUsername",
-      "setImage",
-      "setBasicInfo",
-    ]), // Map Vuex actions
+    ...mapActions(["login", "logout", "setUsername", "setImage", "setAdmin"]), // Map Vuex actions
 
     toggleForm() {
       this.isLogin = !this.isLogin;
@@ -211,6 +205,7 @@ export default {
             this.login();
             this.setUsername(response.data.data.username);
             this.setImage(response.data.data.image);
+            this.setAdmin(response.data.data.role);
             this.successMessage = "Login successful!";
             this.successDialog = true;
             setTimeout(() => {

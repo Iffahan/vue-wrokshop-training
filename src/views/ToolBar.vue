@@ -35,6 +35,19 @@
       <v-btn v-show="!isMobile" text to="/grade">Grade</v-btn>
       <v-btn v-show="!isMobile" text to="/about">About</v-btn>
 
+      <!-- Cart Icon with Badge -->
+      <v-btn v-show="!isMobile" icon @click="editCart">
+        <v-badge
+          v-if="cartItemCount > 0"
+          overlap
+          color="pink"
+          content="cartItemCount"
+        >
+          <v-icon>mdi-cart</v-icon>
+        </v-badge>
+        <v-icon v-else>mdi-cart-outline</v-icon>
+      </v-btn>
+
       <!-- Authenticated User Dropdown -->
       <template v-if="isAuthenticated">
         <v-menu bottom right>
@@ -89,6 +102,7 @@
         </template>
         <v-list>
           <v-list-item to="/">Home</v-list-item>
+          <v-list-item @click="editCart"> Cart </v-list-item>
           <v-list-item to="/grade">Grade</v-list-item>
           <v-list-item to="/about">About</v-list-item>
           <v-list-item v-if="!isAuthenticated" to="/login">Login</v-list-item>
@@ -131,6 +145,13 @@ export default {
       // Check if already on the profile page to avoid redundant navigation
       if (this.$route.path !== "/profile") {
         this.$router.push("/profile");
+      }
+    },
+
+    editCart() {
+      // Check if already on the profile page to avoid redundant navigation
+      if (this.$route.path !== "/cart") {
+        this.$router.push("/cart");
       }
     },
   },

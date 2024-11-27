@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     // Map the 'isAuthenticated' getter from Vuex
-    ...mapGetters(["isAuthenticated", "getUsername", "getImage"]),
+    ...mapGetters(["isAuthenticated", "getUsername", "getImage", "getAdmin"]),
   },
   methods: {
     async fetchProducts() {
@@ -57,6 +57,7 @@ export default {
     console.log("Is user authenticated?", this.isAuthenticated);
     console.log("Username:", this.getUsername);
     console.log("Image:", this.getImage);
+    console.log("Admin:", this.getAdmin);
     // Fetch products when the page is loaded
     this.fetchProducts();
   },

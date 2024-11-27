@@ -51,6 +51,19 @@ const routes = [
             next(); // Proceed to the profile page if authenticated
           }
         }
+      },
+      {
+        path: '/cart',
+        name: 'cart',
+        component: () => import('../views/CartVIew.vue'),
+        beforeEnter: (to, from, next) => {
+          // Check if the user is authenticated using Vuex getter
+          if (!store.getters.isAuthenticated) {
+            next({ name: 'login' }); // Redirect to login if not authenticated
+          } else {
+            next(); // Proceed to the profile page if authenticated
+          }
+        }
       }
     ]
   }
