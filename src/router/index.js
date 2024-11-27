@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import store from '../store'; // Import your Vuex store
 
 Vue.use(VueRouter)
 
@@ -38,6 +39,19 @@ const routes = [
         name: 'test',
         component: () => import('../views/TestViews.vue')
       },
+      {
+        path: '/profile',
+        name: 'profile',
+        component: () => import('../views/ProfileView.vue'),
+        beforeEnter: (to, from, next) => {
+          // Check if the user is authenticated using Vuex getter
+          if (!store.getters.isAuthenticated) {
+            next({ name: 'login' }); // Redirect to login if not authenticated
+          } else {
+            next(); // Proceed to the profile page if authenticated
+          }
+        }
+      }
     ]
   }
 ]

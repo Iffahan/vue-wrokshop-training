@@ -128,8 +128,10 @@ export default {
       this.searchBarWidth = this.isMobile ? "100%" : "300px"; // Full width on mobile
     },
     editProfile() {
-      // Redirect to the Edit Profile page
-      this.$router.push("/profile");
+      // Check if already on the profile page to avoid redundant navigation
+      if (this.$route.path !== "/profile") {
+        this.$router.push("/profile");
+      }
     },
   },
   created() {
