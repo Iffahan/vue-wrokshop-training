@@ -27,7 +27,6 @@
               <h3>{{ isLogin ? "Login" : "Sign up" }}</h3>
             </v-card-title>
 
-            <!-- Add transition effect for left-right swap -->
             <v-form
               ref="authForm"
               v-model="valid"
@@ -121,7 +120,6 @@
               </transition>
             </v-form>
 
-            <!-- Switch Button for Register/Login -->
             <v-row justify="center" align="center" class="mt-4">
               <span>
                 <span v-if="isLogin">
@@ -148,7 +146,6 @@
       </v-row>
     </v-container>
 
-    <!-- Success Modal -->
     <v-dialog v-model="successDialog" max-width="400px">
       <v-card>
         <v-card-title class="text-h6">Success!</v-card-title>
@@ -163,10 +160,12 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   data() {
     return {
-      isLogin: true, // Default is Login
+      isLogin: true,
       username: "",
       email: "",
       password: "",
@@ -178,6 +177,8 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["login", "logout", "setUsername"]), // Map Vuex actions
+
     toggleForm() {
       this.isLogin = !this.isLogin;
     },
@@ -193,22 +194,23 @@ export default {
     async handleLogin() {
       try {
         this.loading = true;
-        // Wait for 1 second before sending the login request
         setTimeout(async () => {
           const response = await this.axios.post("/authen/login", {
             username: this.username,
             password: this.password,
           });
           this.loading = false;
-          console.log(response.data);
-          setTimeout(() => {
+          if (response.data.success) {
+            // Update Vuex state to reflect that the user is authenticated
+            this.login();
+            this.setUsername(response.data.data.username);
             this.successMessage = "Login successful!";
             this.successDialog = true;
             setTimeout(() => {
               this.$router.push("/"); // Redirect after login
-            }, 1000); // Add a 1-second delay before redirecting
-          }, 1000); // Delay before showing success message
-        }, 1000); // Delay before calling API
+            }, 1000);
+          }
+        }, 1000);
       } catch (error) {
         this.loading = false;
         console.error(error);
@@ -224,7 +226,6 @@ export default {
 
       try {
         this.loading = true;
-        // Wait for 1 second before sending the registration request
         setTimeout(async () => {
           const response = await this.axios.post("/users", {
             username: this.username,
@@ -232,16 +233,15 @@ export default {
             password: this.password,
           });
           this.loading = false;
-          console.log(response.data);
           if (response.data.success) {
             this.successMessage =
               "Registration successful! You can now log in.";
             this.successDialog = true;
             setTimeout(() => {
-              this.isLogin = true; // Switch to login form after 1 second
+              this.isLogin = true;
             }, 1000);
           }
-        }, 1000); // Delay before calling API
+        }, 1000);
       } catch (error) {
         this.loading = false;
         console.error(error);
@@ -251,9 +251,6 @@ export default {
 
     handleSuccessDialog() {
       this.successDialog = false;
-      if (this.isLogin) {
-        console.log(`isLogin: ${this.isLogin}`);
-      }
     },
   },
 };

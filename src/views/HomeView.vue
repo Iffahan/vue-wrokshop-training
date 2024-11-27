@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import axios from "axios";
 
 export default {
@@ -25,6 +26,10 @@ export default {
       loading: false,
       error: "",
     };
+  },
+  computed: {
+    // Map the 'isAuthenticated' getter from Vuex
+    ...mapGetters(["isAuthenticated", "getUsername", "getImage"]),
   },
   methods: {
     async fetchProducts() {
@@ -48,6 +53,10 @@ export default {
     },
   },
   mounted() {
+    // Log the authentication state when the component is mounted
+    console.log("Is user authenticated?", this.isAuthenticated);
+    console.log("Username:", this.getUsername);
+    console.log("Image:", this.getImage);
     // Fetch products when the page is loaded
     this.fetchProducts();
   },
