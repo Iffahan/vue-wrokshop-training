@@ -55,11 +55,27 @@
           <v-btn
             color="green"
             class="custom-button"
-            @click="createProduct"
+            @click="handleSaveProduct"
             :disabled="!valid"
           >
-            Create
+            {{ isEditMode ? "Update" : "Create" }}
           </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Confirmation Dialog for Deletion -->
+    <v-dialog v-model="isDeleteDialogOpen" max-width="400px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Confirm Deletion</span>
+        </v-card-title>
+        <v-card-text>
+          Are you sure you want to delete this product?
+        </v-card-text>
+        <v-card-actions>
+          <v-btn text @click="closeDeleteDialog">No</v-btn>
+          <v-btn color="red" dark @click="confirmDelete">Yes</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -69,14 +85,54 @@
     <div v-if="error" class="error">{{ error }}</div>
 
     <div v-if="products.length > 0" class="products-list">
-      <ProductCard
-        v-for="product in products"
-        :key="product._id"
-        :product="product"
-        @add-to-cart="handleAddToCart"
-        @delete-product="handleDeleteProduct"
-        @edit-product="handleEditProduct"
-      />
+      <!-- Inline ProductCard -->
+      <div v-for="product in products" :key="product._id" class="product-card">
+        <v-card>
+          <v-img
+            v-if="product.image"
+            :src="product.image"
+            alt="Product Image"
+            height="200px"
+          />
+          <v-card-title>
+            <span class="headline">{{ product.name }}</span>
+          </v-card-title>
+          <v-card-subtitle>
+            <span class="price">${{ product.price }}</span>
+          </v-card-subtitle>
+          <v-card-text>
+            <p><strong>Description:</strong> {{ product.description }}</p>
+            <p><strong>Quantity:</strong> {{ product.quantity }} available</p>
+          </v-card-text>
+          <v-card-actions class="actions">
+            <v-btn
+              v-if="isAdmin"
+              icon
+              color="red"
+              @click="openDeleteDialog(product._id)"
+              aria-label="Delete Product"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+            <v-btn
+              v-if="isAdmin"
+              icon
+              color="orange"
+              @click="handleEditProduct(product)"
+              aria-label="Edit Product"
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn
+              color="green"
+              class="custom-button"
+              @click="handleAddToCart(product)"
+            >
+              {{ addedToCart(product) ? "Added to Cart" : "Add to Cart" }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </div>
     </div>
     <div v-else class="no-products">No products available.</div>
   </div>
@@ -85,19 +141,19 @@
 <script>
 import { mapGetters } from "vuex";
 import axios from "axios";
-import ProductCard from "@/components/ProductCard.vue"; // Import the ProductCard component
 
 export default {
-  components: {
-    ProductCard, // Register the component
-  },
   data() {
     return {
       products: [],
       loading: false,
       error: "",
       isCreateModalOpen: false,
+      isEditMode: false, // Flag to differentiate between create and edit modes
+      isDeleteDialogOpen: false, // Track the delete dialog state
+      productToDelete: null, // Store the product ID to delete
       newProduct: {
+        _id: "", // Add this field to hold the product ID for editing
         name: "",
         price: "",
         description: "",
@@ -106,6 +162,7 @@ export default {
       },
       imageFile: null, // Store the image file object
       valid: false,
+      cart: [],
     };
   },
   computed: {
@@ -135,19 +192,21 @@ export default {
     },
     showCreateModal() {
       this.isCreateModalOpen = true;
+      this.isEditMode = false; // Set to create mode
     },
     closeCreateModal() {
       this.isCreateModalOpen = false;
+      this.isEditMode = false; // Reset to create mode
       this.newProduct = {
+        _id: "",
         name: "",
         price: "",
         description: "",
-        quantity: 0,
+        quantity: 1,
         image: "",
       };
       this.imageFile = null; // Reset the image file on close
     },
-
     onImageChange(file) {
       const reader = new FileReader();
       const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -161,7 +220,6 @@ export default {
         this.error = "Please upload a valid image file (JPEG, PNG, GIF).";
       }
     },
-
     async createProduct() {
       try {
         const response = await axios.post("/products", this.newProduct, {
@@ -178,22 +236,39 @@ export default {
         this.error = "An error occurred while creating the product.";
       }
     },
-
-    handleAddToCart(product) {
-      console.log("Product added to cart:", product);
-      // Implement the add-to-cart functionality here
+    async updateProduct() {
+      try {
+        const response = await axios.put(
+          `/products/${this.newProduct._id}`,
+          this.newProduct,
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          this.fetchProducts();
+          this.closeCreateModal();
+          console.log("Product updated successfully:", response.data.product);
+        } else {
+          this.error = "Failed to update product.";
+        }
+      } catch (err) {
+        this.error = "An error occurred while updating the product.";
+      }
     },
-
+    handleAddToCart(product) {
+      if (!this.cart.includes(product._id)) {
+        this.cart.push(product._id);
+      }
+    },
+    addedToCart(product) {
+      return this.cart.includes(product._id);
+    },
     async handleDeleteProduct(productId) {
       try {
         const response = await axios.delete(`/products/${productId}`, {
           withCredentials: true,
         });
         if (response.data.success) {
-          // Remove the deleted product from the local list
-          this.products = this.products.filter(
-            (product) => product._id !== productId
-          );
+          this.products = this.products.filter((p) => p._id !== productId);
           console.log("Product deleted successfully");
         } else {
           this.error = "Failed to delete product.";
@@ -202,10 +277,46 @@ export default {
         this.error = "An error occurred while deleting the product.";
       }
     },
-
     handleEditProduct(product) {
-      this.newProduct = { ...product }; // Populate form with the product details
-      this.showCreateModal(); // Reuse create modal for editing
+      this.newProduct = { ...product }; // Populate form with product details
+      this.isCreateModalOpen = true;
+      this.isEditMode = true; // Set to edit mode
+    },
+    handleSaveProduct() {
+      if (this.isEditMode) {
+        this.updateProduct(); // Call updateProduct for editing
+      } else {
+        this.createProduct(); // Call createProduct for new product
+      }
+    },
+    openDeleteDialog(productId) {
+      this.productToDelete = productId;
+      this.isDeleteDialogOpen = true;
+    },
+    closeDeleteDialog() {
+      this.isDeleteDialogOpen = false;
+      this.productToDelete = null;
+    },
+    async confirmDelete() {
+      try {
+        const response = await axios.delete(
+          `/products/${this.productToDelete}`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.data.success) {
+          this.products = this.products.filter(
+            (p) => p._id !== this.productToDelete
+          );
+          this.productToDelete = null;
+          this.closeDeleteDialog();
+        } else {
+          this.error = "Failed to delete product.";
+        }
+      } catch (err) {
+        this.error = "An error occurred while deleting the product.";
+      }
     },
   },
   mounted() {
@@ -233,8 +344,8 @@ export default {
   gap: 20px;
 }
 
-.no-products {
-  color: gray;
+.product-card {
+  margin: 10px;
 }
 
 .custom-button {
