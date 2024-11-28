@@ -7,6 +7,17 @@
       Create Product
     </v-btn>
 
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+      timeout="3000"
+      absolute
+      top
+      right
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
+
     <!-- Modal for Creating Product -->
     <v-dialog v-model="isCreateModalOpen" max-width="500px">
       <v-card>
@@ -163,6 +174,11 @@ export default {
       imageFile: null, // Store the image file object
       valid: false,
       cart: [],
+      snackbar: {
+        show: false,
+        text: "",
+        color: "",
+      },
     };
   },
   computed: {
@@ -254,14 +270,37 @@ export default {
         this.error = "An error occurred while updating the product.";
       }
     },
-    handleAddToCart(product) {
-      if (!this.cart.includes(product._id)) {
-        this.cart.push(product._id);
+    async handleAddToCart(product) {
+      try {
+        // Construct the payload
+        const payload = {
+          productId: product._id,
+          quantity: 1, // Default quantity set to 1
+        };
+
+        // Make the API request
+        const response = await axios.post("/carts", payload, {
+          withCredentials: true,
+        });
+
+        // Check if the request was successful
+        if (response.data.success || response.status === 200) {
+          console.log("Product added to cart successfully:", response.data);
+          // this.$notify({ type: "success", text: "Product added to cart!" });
+          this.showSnackbar("Product added to cart!", "success");
+        } else {
+          throw new Error("Unexpected response from the server.");
+        }
+      } catch (err) {
+        console.error(err);
+        this.$notify({ type: "error", text: "Failed to add product to cart." });
       }
     },
+
     addedToCart(product) {
       return this.cart.includes(product._id);
     },
+
     async handleDeleteProduct(productId) {
       try {
         const response = await axios.delete(`/products/${productId}`, {
@@ -317,6 +356,9 @@ export default {
       } catch (err) {
         this.error = "An error occurred while deleting the product.";
       }
+    },
+    showSnackbar(message, color = "success") {
+      this.snackbar = { show: true, text: message, color };
     },
   },
   mounted() {
