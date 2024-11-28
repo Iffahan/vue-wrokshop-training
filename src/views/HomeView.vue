@@ -293,7 +293,8 @@ export default {
         }
       } catch (err) {
         console.error(err);
-        this.$notify({ type: "error", text: "Failed to add product to cart." });
+        this.showSnackbar(err.message, "error");
+        // this.$notify({ type: "error", text: "Failed to add product to cart." });
       }
     },
 

@@ -36,12 +36,12 @@
       <v-btn v-show="!isMobile" text to="/about">About</v-btn>
 
       <!-- Cart Icon with Badge -->
-      <v-btn v-show="!isMobile" icon @click="editCart">
+      <v-btn v-show="!isMobile & isAuthenticated" icon @click="editCart">
         <v-badge
           v-if="cartItemCount > 0"
           overlap
           color="pink"
-          content="cartItemCount"
+          :content="cartItemCount"
         >
           <v-icon>mdi-cart</v-icon>
         </v-badge>
@@ -102,7 +102,9 @@
         </template>
         <v-list>
           <v-list-item to="/">Home</v-list-item>
-          <v-list-item @click="editCart"> Cart </v-list-item>
+          <v-list-item v-if="isAuthenticated" @click="editCart">
+            Cart
+          </v-list-item>
           <v-list-item to="/grade">Grade</v-list-item>
           <v-list-item to="/about">About</v-list-item>
           <v-list-item v-if="!isAuthenticated" to="/login">Login</v-list-item>
@@ -118,12 +120,14 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import axios from "axios";
 
 export default {
   data() {
     return {
       isMobile: false,
       searchBarWidth: "300px", // Default width
+      cartItemCount: 0, // Number of items in the cart
     };
   },
   computed: {
@@ -135,6 +139,19 @@ export default {
     }),
   },
   methods: {
+    async fetchCartCount() {
+      try {
+        const response = await axios.get("/carts/me");
+        const cartData = response.data.data;
+        console.log("Cart Data:", cartData);
+
+        // Count distinct products in the cart
+        this.cartItemCount = cartData.items.length;
+      } catch (error) {
+        console.error("Failed to fetch cart count:", error);
+        this.cartItemCount = 0;
+      }
+    },
     ...mapActions(["logout"]), // Map logout action from Vuex
     checkMobile() {
       // Check if screen size is small or mobile
@@ -157,6 +174,7 @@ export default {
   },
   created() {
     this.checkMobile(); // Run on load to check initial screen size
+    this.fetchCartCount(); // Fetch cart count on component creation
     window.addEventListener("resize", this.checkMobile); // Listen for window resize events
   },
   destroyed() {
